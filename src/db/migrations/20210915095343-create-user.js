@@ -46,6 +46,11 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DATE,
             },
+            role: {
+                type: Sequelize.ENUM,
+                values: ['buyer', 'seller'],
+                allowNull: false,
+            },
         });
     },
 

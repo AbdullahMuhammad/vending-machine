@@ -9,21 +9,37 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-          //  User.belongsTo(models.agency, { foreignKey: 'agency_id', targetKey: 'id' });
+            // Example: User.hasMany(models.SomeOtherModel);
         }
     }
 
     User.init(
         {
-            uuid: DataTypes.UUID,
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV1,
+                primaryKey: true,
+            },
             first_name: DataTypes.STRING,
             last_name: DataTypes.STRING,
-            email: DataTypes.STRING,
-            password: DataTypes.STRING,
+            email: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
             status: DataTypes.INTEGER,
             email_verified: DataTypes.INTEGER,
             address: DataTypes.STRING,
             phone_number: DataTypes.STRING,
+            role: {
+                type: DataTypes.ENUM,
+                values: ['buyer', 'seller'],
+                allowNull: false,
+            },
         },
         {
             sequelize,
