@@ -5,6 +5,7 @@ const userConstant = {
     STATUS_INACTIVE: 0,
     STATUS_REMOVED: 2,
 };
+
 const verificationCodeConstant = {
     TYPE_EMAIL_VERIFICATION: 1,
     TYPE_RESET_PASSWORD: 2,
@@ -12,7 +13,13 @@ const verificationCodeConstant = {
     STATUS_USED: 1,
 };
 
+const rolesEnum = {
+    BUYER: 'buyer',
+    SELLER: 'seller',
+};
+
 module.exports = {
     userConstant,
     verificationCodeConstant,
+    rolesEnum,
 };
