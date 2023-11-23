@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const httpStatus = require('http-status');
 const ApiError = require('../helper/ApiError');
+const { rolesEnum } = require('../config/constant');
 
 class UserValidator {
     async userCreateValidator(req, res, next) {
@@ -11,6 +12,7 @@ class UserValidator {
             confirm_password: Joi.string().valid(Joi.ref('password')).required(),
             first_name: Joi.string(),
             last_name: Joi.string(),
+            role: Joi.string().valid(rolesEnum.SELLER, rolesEnum.BUYER).required(),
         });
 
         // schema options
