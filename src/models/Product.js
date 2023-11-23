@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // Assuming a Product belongs to a User
-            Product.belongsTo(models.User, { foreignKey: 'sellerId', as: 'seller' });
+            console.log('********************************');
+            console.log(models);
+            console.log('********************************');
+            Product.belongsTo(models.user, { foreignKey: 'sellerId', as: 'seller' });
         }
     }
 
