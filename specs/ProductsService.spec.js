@@ -1,8 +1,8 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const httpStatus = require('http-status');
-const ProductsService = require('../../src/service/ProductsService');
-const ProductsDao = require('../../src/dao/ProductsDao');
+const ProductsService = require('../src/service/ProductsService');
+const ProductsDao = require('../src/dao/ProductsDao');
 const { expect } = chai;
 
 describe('ProductsService', () => {
