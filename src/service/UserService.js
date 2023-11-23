@@ -36,7 +36,9 @@ class UserService {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
             }
           
-            userData = userData.toJSON();
+            if (typeof userData.toJSON === 'function') {
+                userData = userData.toJSON();
+            }
             delete userData.password;
 
             return responseHandler.returnSuccess(httpStatus.CREATED, message, userData);
