@@ -4,6 +4,7 @@ const { expect } = chai;
 const sinon = require('sinon');
 const httpStatus = require('http-status');
 const AuthService = require('../../src/service/AuthService');
+const UserService = require('../../src/service/UserService');
 const UserDao = require('../../src/dao/UserDao');
 const models = require('../../src/models');
 
@@ -37,12 +38,11 @@ describe('User Login test', () => {
                 code: httpStatus.OK,
                 message: 'Login Successful',
                 data: {
-                    id: 1,
+                    uuid: "4d85f12b-6e5b-468b-a971-eabe8acc9d08",
                     first_name: 'John',
                     last_name: 'Doe',
                     email: 'john@mail.com',
                     email_verified: 1,
-                    uuid: '4d85f12b-6e5b-468b-a971-eabe8acc9d08',
                 },
             },
         };
