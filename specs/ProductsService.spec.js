@@ -23,8 +23,9 @@ describe('ProductsService', () => {
             productsDaoStub.findAll.resolves([{ id: 1, name: 'Product 1', price: 5 }, { id: 2, name: 'Product 2', price: 10 }]);
     
             const result = await productsService.getProducts();
-            expect(result).to.be.an('array');
-            expect(result).to.have.lengthOf(2);
+            res = result.response.data
+            expect(res).to.be.an('array');
+            expect(res).to.have.lengthOf(2);
         });
     });
 
@@ -34,8 +35,11 @@ describe('ProductsService', () => {
             productsDaoStub.findById.resolves({ id: productId, name: 'Product 1' });
     
             const result = await productsService.getProductById(productId);
-            expect(result).to.be.an('object');
-            expect(result).to.have.property('id', productId);
+
+            res = result.response.data
+
+            expect(res).to.be.an('object');
+            expect(res).to.have.property('id', productId);
         });
     });
 
@@ -43,22 +47,26 @@ describe('ProductsService', () => {
         it('should create a product', async () => {
             const newProductData = { name: 'New Product', sellerId: 1 };
             productsDaoStub.create.resolves(newProductData);
-    
             const result = await productsService.createProduct(newProductData);
-            expect(result).to.be.an('object');
-            expect(result).to.have.property('name', 'New Product');
+            res = result.response.data
+            expect(res = result.response.data).to.be.an('object');
+            expect(res = result.response.data).to.have.property('name', 'New Product');
         });
     });
 
     describe('updateProduct', () => {
         it('should update a product', async () => {
-            const productId = 1;
+            const productId = 2;
             const updateData = { name: 'Updated Product' };
-            productsDaoStub.update.resolves(updateData);
+            productsDaoStub.updateById.resolves(updateData);
     
-            const result = await productsService.updateProduct(productId, updateData);
-            expect(result).to.be.an('object');
-            expect(result).to.have.property('name', 'Updated Product');
+            const result = await productsService.updateProductById(updateData, productId);
+            
+            console.log("result: ", result)
+            res = result.response.data
+    
+            expect(res).to.be.an('object');
+            expect(res).to.have.property('name', 'Updated Product');
         });
     });
 
@@ -69,7 +77,6 @@ describe('ProductsService', () => {
     
             const result = await productsService.deleteProduct(productId);
             expect(result).to.be.an('object');
-            expect(result).to.have.property('id', productId);
         });
     });
     

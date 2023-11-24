@@ -82,15 +82,13 @@ class ProductsService {
      * @param {Object} updateData - Object containing the product data to update
      * @returns {Object} Response object containing the status code, message, and updated product data
      */
-    updateProduct = async (productId, updateData) => {
-        try {
-            const product = await this.productsDao.findById(productId);
-    
-            if (!product) {
-                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Product not found.');
+    updateProductById = async (updateData, productId) => {
+        try {    
+            let updatedProduct = await this.productsDao.updateById(updateData, productId);
+
+            if (!updatedProduct) {
+                return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Product failed to update.');
             }
-    
-            let updatedProduct = await this.productsDao.update(productId, updateData);
     
             return responseHandler.returnSuccess(httpStatus.OK, 'Product updated successfully.', updatedProduct);
         } catch (e) {
