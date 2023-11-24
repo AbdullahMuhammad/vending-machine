@@ -31,6 +31,12 @@ class UserDao extends SuperDao {
             where: { role: rolesEnum.SELLER }
         });
     }
+
+    async firstBuyer() {
+        return User.findOne({ 
+            where: { role: rolesEnum.BUYER }
+        });
+    }
 }
 
 module.exports = UserDao;
