@@ -1,5 +1,6 @@
 const SuperDao = require('./SuperDao');
 const models = require('../models');
+const { rolesEnum } = require('../config/constant');
 
 const User = models.user;
 
@@ -23,6 +24,12 @@ class UserDao extends SuperDao {
 
     async createWithTransaction(user, transaction) {
         return User.create(user, { transaction });
+    }
+
+    async firstSeller() {
+        return User.findOne({ 
+            where: { role: rolesEnum.SELLER }
+        });
     }
 }
 
