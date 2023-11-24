@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const UserDao = require('../dao/UserDao');
+const DepositDao = require('../dao/DepositDao');
 const responseHandler = require('../helper/responseHandler');
 const logger = require('../config/logger');
 const { userConstant } = require('../config/constant');
@@ -35,7 +36,7 @@ class UserService {
                 message = 'Registration Failed! Please Try again.';
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
             }
-          
+
             if (typeof userData.toJSON === 'function') {
                 userData = userData.toJSON();
             }
@@ -106,7 +107,7 @@ class UserService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Password Update Failed!');
     };
 
-        // ... existing methods ...
+    // ... existing methods ...
 
     /**
      * Deposit coins into a buyer's account
@@ -132,10 +133,14 @@ class UserService {
                 return responseHandler.returnError(httpStatus.FORBIDDEN, 'Only buyers can deposit coins');
             }
 
-            user.depositAmount = user.depositAmount + coin;
-            await user.save();
+            // Create or update a deposit record
+            const depositDao = new DepositDao();
+            await depositDao.createOrUpdate({
+                userId: user.id,
+                amount: coin
+            });
 
-            return responseHandler.returnSuccess(httpStatus.OK, 'Coin deposited successfully', { depositAmount: user.depositAmount });
+            return responseHandler.returnSuccess(httpStatus.OK, 'Coin deposited successfully', { depositAmount: depositDao.amount });
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong!');
