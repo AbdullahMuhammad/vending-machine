@@ -37,10 +37,6 @@ describe('UserService', () => {
 
             const result = await userService.createUser(userBody);
 
-            console.log('*****************************');
-            console.log(result)
-            console.log('*****************************');
-
             expect(result.response.status).to.be.true;
             expect(result.statusCode).to.equal(httpStatus.CREATED);
         });
