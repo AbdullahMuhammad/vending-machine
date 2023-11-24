@@ -94,6 +94,25 @@ class AuthController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    /**
+     * Deposit coins into the user's account
+     * @param req
+     * @param res
+     */
+    deposit = async (req, res) => {
+        try {
+            const { uuid } = req.user; // Assuming the user's UUID is available in req.user
+            const { coin } = req.body; // The coin denomination to deposit
+
+            const response = await this.userService.depositCoins(uuid, coin);
+
+            res.status(response.statusCode).send(response.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error processing deposit request');
+        }
+    };
 }
 
 module.exports = AuthController;
