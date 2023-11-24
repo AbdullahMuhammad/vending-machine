@@ -16,6 +16,11 @@ class ProductsDao extends SuperDao {
         }
         return null;
     }
+
+    // Method to get the first product
+    async first() {
+        return await Product.findOne();
+    }
 }
 
 module.exports = ProductsDao;
