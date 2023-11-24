@@ -16,10 +16,10 @@ describe('ProductsController', () => {
     let firstProduct;
     let firstSeller;
     let firstBuyer;
+    const userDao = new UserDao();
+    const productsDao = new ProductsDao();
 
     before(async () => {
-        const userDao = new UserDao();
-        const productsDao = new ProductsDao();
         firstSeller = await userDao.firstSeller();
         firstBuyer = await userDao.firstBuyer();
         firstProduct = await productsDao.first();
