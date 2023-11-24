@@ -14,11 +14,14 @@ describe('ProductsController', () => {
     let sellerId;
     let uuid;
     let firstProduct;
+    let firstSeller;
+    let firstBuyer;
 
     before(async () => {
         const userDao = new UserDao();
         const productsDao = new ProductsDao();
-        const firstSeller = await userDao.firstSeller();
+        firstSeller = await userDao.firstSeller();
+        firstBuyer = await userDao.firstBuyer();
         firstProduct = await productsDao.first();
         if (firstSeller) {
             sellerId = firstSeller.id;
@@ -81,5 +84,44 @@ describe('ProductsController', () => {
             expect(res.body.message).to.eq('Product updated successfully.');
         });
     });
+
+    describe('POST /products/:id/buy', () => {
+        let insufficientFundsBuyer;
+        let productId;
+    
+        before(async () => {
+            // Assuming a method to get a buyer with insufficient funds
+            insufficientFundsBuyer = await userDao.firstBuyerWithInsufficientFunds();
+            productId = firstProduct.id;
+        });
+    
+        it('should successfully purchase a product', async () => {
+            const res = await request(app)
+                .post(`/api/products/${productId}/buy`)
+                .send({ userId: firstBuyer.id });
+    
+            expect(res.status).to.equal(200);
+            expect(res.body.message).to.eq('Product purchased successfully.');
+        });
+    
+        it('should fail to purchase a product due to insufficient funds', async () => {
+            const res = await request(app)
+                .post(`/api/products/${productId}/buy`)
+                .send({ userId: insufficientFundsBuyer.id });
+    
+            expect(res.status).to.equal(400);
+            expect(res.body.message).to.eq('Insufficient funds to purchase the product.');
+        });
+    
+        it('should fail to purchase a product with a non-buyer user', async () => {
+            const res = await request(app)
+                .post(`/api/products/${productId}/buy`)
+                .send({ userId: firstSeller.id });
+    
+            expect(res.status).to.equal(403);
+            expect(res.body.message).to.eq('Only buyers can purchase products.');
+        });
+    });
+    
 
 });
