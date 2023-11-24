@@ -43,6 +43,7 @@ describe('User Login test', () => {
                     last_name: 'Doe',
                     email: 'john@mail.com',
                     email_verified: 1,
+                    id: 1,
                 },
             },
         };
@@ -100,4 +101,88 @@ describe('User Login test', () => {
         );
         expect(userLogin).to.deep.include(expectedResponse);
     });
+});
+
+
+describe('Buyer deposit tests', () => {
+    let userService;
+    let userDaoStub;
+    let user;
+
+    beforeEach(() => {
+        userService = new UserService();
+        userDaoStub = sinon.stub(UserDao.prototype);
+        user = {
+            uuid: 'user-uuid',
+            role: 'buyer',
+            depositAmount: 0, // Assuming a field to track the deposit amount
+            save: sinon.spy() // Stubbing the save method
+        };
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    describe('deposit', () => {
+        it('should allow a buyer to deposit coins', async () => {
+            const coin = 5; // Example coin denomination
+
+            // Stubbing the method to find the user by UUID
+            userDaoStub.findOneByWhere.resolves(user);
+
+            const response = await userService.deposit(user.uuid, coin);
+
+            expect(response).to.have.property('statusCode', httpStatus.OK);
+            expect(user.depositAmount).to.equal(coin);
+            expect(user.save.called).to.be.true;
+        });
+
+        it('should not allow a non-buyer to deposit coins', async () => {
+            user.role = 'seller'; // Change role to non-buyer
+
+            // Stubbing the method to find the user by UUID
+            userDaoStub.findOneByWhere.resolves(user);
+
+            const response = await userService.deposit(user.uuid, 5);
+
+            expect(response).to.have.property('statusCode', httpStatus.FORBIDDEN);
+        });
+
+        it('should reject invalid coin denominations', async () => {
+            const invalidCoin = 3; // Example of an invalid coin denomination
+
+            // Stubbing the method to find the user by UUID
+            userDaoStub.findOneByWhere.resolves(user);
+
+            const response = await userService.deposit(user.uuid, invalidCoin);
+
+            expect(response).to.have.property('statusCode', httpStatus.BAD_REQUEST);
+        });
+
+        it('should only allow depositing 5, 10, 20, 50, and 100 cent coins', async () => {
+            const validCoins = [5, 10, 20, 50, 100];
+            const invalidCoins = [1, 3, 15, 30, 60];
+    
+            // Stubbing the method to find the user by UUID
+            userDaoStub.findOneByWhere.resolves(user);
+    
+            // Test each valid coin
+            for (let coin of validCoins) {
+                user.depositAmount = 0; // Reset deposit amount
+                const response = await userService.deposit(user.uuid, coin);
+                expect(response).to.have.property('statusCode', httpStatus.OK);
+                expect(user.depositAmount).to.equal(coin);
+            }
+    
+            // Test each invalid coin
+            for (let coin of invalidCoins) {
+                user.depositAmount = 0; // Reset deposit amount
+                const response = await userService.deposit(user.uuid, coin);
+                expect(response).to.have.property('statusCode', httpStatus.BAD_REQUEST);
+            }
+        });
+    });
+
+    
 });
