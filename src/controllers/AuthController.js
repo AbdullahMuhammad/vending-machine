@@ -105,7 +105,7 @@ class AuthController {
             const { uuid } = req.user; // Assuming the user's UUID is available in req.user
             const { coin } = req.body; // The coin denomination to deposit
 
-            const response = await this.userService.depositCoins(uuid, coin);
+            const response = await this.userService.deposit(uuid, coin);
 
             res.status(response.statusCode).send(response.response);
         } catch (e) {
