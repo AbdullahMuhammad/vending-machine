@@ -8,10 +8,6 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            // Assuming a Product belongs to a User
-            console.log('********************************');
-            console.log(models);
-            console.log('********************************');
             Product.belongsTo(models.user, { foreignKey: 'sellerId', as: 'seller' });
         }
     }
@@ -34,11 +30,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             productName: {
                 type: DataTypes.STRING,
+                field: 'productName',
                 allowNull: false,
             },
             sellerId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                field: 'sellerId',
                 references: {
                     model: 'users', // Make sure this matches the table name for users
                     key: 'id',

@@ -25,7 +25,7 @@ class ProductsService {
                 message = 'Product Creation Failed! Please Try again.'; // Again no magic strings
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
             }
-          
+
             return responseHandler.returnSuccess(httpStatus.CREATED, message, productData);
         } catch (e) {
             logger.error(e);
@@ -48,8 +48,8 @@ class ProductsService {
                 message = 'No products found.'; // Again no magic strings
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
             }
-          
-            return responseHandler.returnSuccess(httpStatus.CREATED, message, productsData);
+
+            return responseHandler.returnSuccess(httpStatus.OK, message, productsData);
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something went wrong!');
@@ -64,11 +64,11 @@ class ProductsService {
     getProductById = async (productId) => {
         try {
             let productData = await this.productsDao.findById(productId);
-    
+
             if (!productData) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Product not found.');
             }
-    
+
             return responseHandler.returnSuccess(httpStatus.OK, 'Product found.', productData);
         } catch (e) {
             logger.error(e);
@@ -83,13 +83,13 @@ class ProductsService {
      * @returns {Object} Response object containing the status code, message, and updated product data
      */
     updateProductById = async (updateData, productId) => {
-        try {    
+        try {
             let updatedProduct = await this.productsDao.updateById(updateData, productId);
 
             if (!updatedProduct) {
                 return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Product failed to update.');
             }
-    
+
             return responseHandler.returnSuccess(httpStatus.OK, 'Product updated successfully.', updatedProduct);
         } catch (e) {
             logger.error(e);
@@ -105,20 +105,20 @@ class ProductsService {
     deleteProduct = async (productId) => {
         try {
             const product = await this.productsDao.findById(productId);
-    
+
             if (!product) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Product not found.');
             }
-    
+
             await this.productsDao.delete(productId);
-    
+
             return responseHandler.returnSuccess(httpStatus.OK, 'Product deleted successfully.');
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong!');
         }
     };
-    
+
 }
 
 module.exports = ProductsService;

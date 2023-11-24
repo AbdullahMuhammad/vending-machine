@@ -12,6 +12,7 @@ router.post('/register', userValidator.userCreateValidator, authController.regis
 router.post('/email-exists', userValidator.checkEmailValidator, authController.checkEmail);
 router.post('/login', userValidator.userLoginValidator, authController.login);
 router.post('/refresh-token', authController.refreshTokens);
+router.put('/deposit', auth(), userValidator.depositValidator, authController.deposit);
 router.post('/logout', authController.logout);
 router.put(
     '/change-password',

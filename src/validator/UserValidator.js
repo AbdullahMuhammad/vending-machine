@@ -40,6 +40,32 @@ class UserValidator {
         }
     }
 
+    async depositValidator(req, res, next) {
+        const schema = Joi.object({
+            coin: Joi.number().valid(5, 10, 20, 50, 100).required().messages({
+                'number.base': 'Coin must be a number',
+                'any.only': 'Invalid coin denomination',
+                'any.required': 'Coin denomination is required'
+            })
+        });
+
+        const options = {
+            abortEarly: false, // include all errors
+            allowUnknown: true, // ignore unknown props
+            stripUnknown: true, // remove unknown props
+        };
+
+        const { error, value } = schema.validate(req.body, options);
+
+        if (error) {
+            const errorMessage = error.details.map(details => details.message).join(', ');
+            next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
+        } else {
+            req.body = value;
+            return next();
+        }
+    }
+
     async userLoginValidator(req, res, next) {
         // create schema object
         const schema = Joi.object({

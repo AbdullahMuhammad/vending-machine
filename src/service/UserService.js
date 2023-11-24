@@ -105,6 +105,42 @@ class UserService {
 
         return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Password Update Failed!');
     };
+
+        // ... existing methods ...
+
+    /**
+     * Deposit coins into a buyer's account
+     * @param {Number} uuid - The UUID of the user
+     * @param {Number} coin - The coin denomination to deposit
+     * @returns {Object}
+     */
+    deposit = async (uuid, coin) => {
+        const validCoins = [5, 10, 20, 50, 100]; // Valid coin denominations
+
+        if (!validCoins.includes(coin)) {
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Invalid coin denomination');
+        }
+
+        try {
+            let user = await this.userDao.findOneByWhere({ uuid });
+
+            if (!user) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, 'User not found');
+            }
+
+            if (user.role !== 'buyer') {
+                return responseHandler.returnError(httpStatus.FORBIDDEN, 'Only buyers can deposit coins');
+            }
+
+            user.depositAmount = user.depositAmount + coin;
+            await user.save();
+
+            return responseHandler.returnSuccess(httpStatus.OK, 'Coin deposited successfully', { depositAmount: user.depositAmount });
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong!');
+        }
+    };
 }
 
 module.exports = UserService;

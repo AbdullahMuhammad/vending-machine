@@ -11,7 +11,7 @@ const defaultRoutes = [
     },
     {
         path: '/products',
-        route: authRoute,
+        route: productRoute,
     },
 ];
 
