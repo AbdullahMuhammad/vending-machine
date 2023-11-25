@@ -13,6 +13,7 @@ router.post('/email-exists', userValidator.checkEmailValidator, authController.c
 router.post('/login', userValidator.userLoginValidator, authController.login);
 router.post('/refresh-token', authController.refreshTokens);
 router.put('/deposit', auth(), userValidator.depositValidator, authController.deposit);
+router.put('/reset-deposit', auth(), authController.resetDeposit);
 router.post('/logout', authController.logout);
 router.put(
     '/change-password',

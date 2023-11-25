@@ -113,6 +113,24 @@ class AuthController {
             res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error processing deposit request');
         }
     };
+
+    /**
+     * Reset the deposit of a user to 0
+     * @param {Object} req - The request object
+     * @param {Object} res - The response object
+     */
+    resetDeposit = async (req, res) => {
+        try {
+            const { uuid } = req.user; // Assuming the user's UUID is available in req.user
+
+            const response = await this.userService.resetDeposit(uuid);
+
+            res.status(response.statusCode).send(response.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error processing reset deposit request');
+        }
+    };
 }
 
 module.exports = AuthController;

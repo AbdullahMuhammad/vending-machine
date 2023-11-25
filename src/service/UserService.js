@@ -146,6 +146,34 @@ class UserService {
             return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong!');
         }
     };
+
+    /**
+     * Reset the deposit of a buyer to 0.
+     * @param {Number} uuid - The UUID of the user
+     * @returns {Object}
+     */
+    resetDeposit = async (uuid) => {
+        try {
+            const user = await this.userDao.findOneByWhere({ uuid });
+
+            if (!user) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, 'User not found');
+            }
+
+            if (user.role !== 'buyer') {
+                return responseHandler.returnError(httpStatus.FORBIDDEN, 'Only buyers can reset deposit');
+            }
+
+            const depositDao = new DepositDao();
+            await depositDao.updateAmount(user.id, 0);
+
+            return responseHandler.returnSuccess(httpStatus.OK, 'Deposit reset successfully', { newDepositAmount: 0 });
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to reset deposit');
+        }
+    };
+
 }
 
 module.exports = UserService;
