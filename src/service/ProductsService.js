@@ -1,5 +1,7 @@
 const httpStatus = require('http-status');
 const ProductsDao = require('../dao/ProductsDao');
+const UserDao = require('../dao/UserDao');
+const DepositDao = require('../dao/DepositDao');
 const responseHandler = require('../helper/responseHandler');
 const logger = require('../config/logger');
 // I dont think we need enumroles here because we will check for user type at middleware
@@ -8,6 +10,8 @@ const { userConstant } = require('../config/constant');
 class ProductsService {
     constructor() {
         this.productsDao = new ProductsDao();
+        this.userDao = new UserDao();
+        this.depositDao = new DepositDao();
     }
 
     /**
@@ -116,6 +120,58 @@ class ProductsService {
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong!');
+        }
+    };
+
+    /**
+     * Buy a product
+     * @param {Number} productId - The ID of the product to delete
+     * @param {Number} userId - The userId of the buyer
+     * @returns {Object} Response object containing the status code and deletion confirmation message
+     */
+    buyProduct = async (productId, userId) => {
+        try {
+
+            console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL');
+            console.log('productId', productId);
+            console.log('userId', userId);
+            console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL');
+
+
+            const product = await this.productsDao.findById(productId);
+            if (!product) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Product not found.');
+            }
+
+            if (product.quantity < 1) {
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Product is out of stock.');
+            }
+
+            const user = await this.userDao.findById(userId);
+            if (!user || user.role !== 'buyer') {
+                return responseHandler.returnError(httpStatus.FORBIDDEN, 'Only buyers can purchase products.');
+            }
+
+            const deposit = await this.depositDao.findByUserId(userId);
+
+            console.log('*'.repeat(100));
+            console.log('deposit');
+            // console.log(deposit);
+            // console.log('product');
+            // console.log(product);
+            console.log('*'.repeat(100));
+            if (!deposit || deposit.amount < product.cost) {
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Insufficient funds to purchase the product.');
+            }
+
+            // Deduct the cost from the user's deposit and update the product quantity
+            await this.depositDao.updateAmount(userId, deposit.amount - product.cost);
+            await this.productsDao.updateQuantity(productId, product.quantity - 1);
+
+            return responseHandler.returnSuccess(httpStatus.OK, 'Product purchased successfully.');
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to complete the purchase.');
         }
     };
 
