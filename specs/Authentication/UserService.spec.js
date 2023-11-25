@@ -4,15 +4,18 @@ const httpStatus = require('http-status');
 const bcrypt = require('bcryptjs');
 const UserService = require('../../src/service/UserService');
 const UserDao = require('../../src/dao/UserDao');
+const DepositDao = require('../../src/dao/DepositDao');
 const { expect } = chai;
 
 describe('UserService', () => {
     let userService;
     let userDaoStub;
+    let depositDaoStub;
 
     beforeEach(() => {
         userService = new UserService();
         userDaoStub = sinon.stub(UserDao.prototype);
+        depositDaoStub = sinon.stub(DepositDao.prototype);
     });
 
     afterEach(() => {
@@ -75,27 +78,26 @@ describe('UserService', () => {
 
     describe('resetDeposit', () => {
         it('should reset the deposit of a buyer to 0', async () => {
-            const userId = 1; // Example user ID
+            const uuid = 'some-uuid-for-buyer'; // Example UUID for buyer
             const role = 'buyer';
     
-            // Set up stubs to simulate a buyer user and successful deposit reset
-            userDaoStub.findById.resolves({ id: userId, role });
-            userDaoStub.resetDeposit.resolves({ id: userId, deposit: 0 });
+            userDaoStub.findOneByWhere.resolves({ id: 1, uuid, role });
+            depositDaoStub.updateAmount.resolves({ userId: 1, deposit: 0 });
     
-            const result = await userService.resetDeposit(userId);
+            const result = await userService.resetDeposit(uuid);
     
             expect(result.response.status).to.be.true;
             expect(result.statusCode).to.equal(httpStatus.OK);
-            expect(result.response.data.deposit).to.equal(0);
+            expect(result.response.data.newDepositAmount).to.equal(0);
         });
     
         it('should not reset the deposit for a seller', async () => {
-            const userId = 2; // Example user ID
+            const uuid = 'some-uuid-for-seller'; // Example UUID for seller
             const role = 'seller';
     
-            userDaoStub.findById.resolves({ id: userId, role });
+            userDaoStub.findOneByWhere.resolves({ id: 2, uuid, role });
     
-            const result = await userService.resetDeposit(userId);
+            const result = await userService.resetDeposit(uuid);
     
             expect(result.response.status).to.be.false;
             expect(result.statusCode).to.equal(httpStatus.FORBIDDEN);
