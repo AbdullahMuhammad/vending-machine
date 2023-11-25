@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             // Example: User.hasMany(models.SomeOtherModel);
             User.hasMany(models.product, { foreignKey: 'sellerId', as: 'products' });
-            User.hasOne(models.deposit, { foreignKey: 'userId', as: 'deposit' });
+            User.hasOne(models.deposit, { foreignKey: 'userId', as: 'deposits' });
         }
     }
 
@@ -19,11 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         {
             id: {
                 type: DataTypes.INTEGER,
+                primaryKey: true,
             },
             uuid: {
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV1,
-                primaryKey: true,
             },
             first_name: DataTypes.STRING,
             last_name: DataTypes.STRING,

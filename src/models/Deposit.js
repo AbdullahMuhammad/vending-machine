@@ -4,7 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Deposit extends Model {
         static associate(models) {
-            Deposit.belongsTo(models.user, { foreignKey: 'userId', as: 'user' });
+            Deposit.belongsTo(models.user, { foreignKey: 'userId', as: 'users' });
         }
     }
 
