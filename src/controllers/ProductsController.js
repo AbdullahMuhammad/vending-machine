@@ -58,13 +58,6 @@ class ProductsController {
     async buy(req, res) {
         const productId = parseInt(req.params.id, 10);
         const { userId } = req.body;
-
-        // console.log('**************************');
-        // console.log('body', req.body);
-        // console.log('userId', userId);
-        // console.log('productId', productId);
-        // console.log('**************************');
-
         const { response, statusCode } = await productsService.buyProduct(productId, userId);
         return res.status(statusCode).json({
             message: response.message,
