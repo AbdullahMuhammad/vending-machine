@@ -65,7 +65,42 @@ const productUpdateValidator = (req, res, next) => {
     next();
 };
 
+const productBuyValidator = (req, res, next) => {
+    // Validating userId from the request body
+    const bodySchema = Joi.object({
+        userId: Joi.number().integer().required().messages({
+            'number.base': 'User ID must be a number',
+            'number.integer': 'User ID must be an integer',
+            'any.required': 'User ID is required'
+        })
+    });
+
+    // Validating productId from the route parameters
+    const paramsSchema = Joi.object({
+        id: Joi.number().integer().required().messages({
+            'number.base': 'Product ID must be a number',
+            'number.integer': 'Product ID must be an integer',
+            'any.required': 'Product ID is required'
+        })
+    });
+
+    const bodyValidation = bodySchema.validate(req.body, { abortEarly: false });
+    const paramsValidation = paramsSchema.validate(req.params, { abortEarly: false });
+
+    // Combine errors from both validations if any
+    const errors = [];
+    if (bodyValidation.error) errors.push(...bodyValidation.error.details);
+    if (paramsValidation.error) errors.push(...paramsValidation.error.details);
+
+    if (errors.length > 0) {
+        return res.status(400).json({ errors: errors.map(detail => detail.message) });
+    }
+
+    next();
+};
+
 module.exports = {
     productCreateValidator,
-    productUpdateValidator
+    productUpdateValidator,
+    productBuyValidator
 };
