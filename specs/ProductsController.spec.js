@@ -18,6 +18,8 @@ describe('ProductsController', () => {
     let firstBuyer;
     const userDao = new UserDao();
     const productsDao = new ProductsDao();
+    const tokenService = new TokenService();
+    
 
     before(async () => {
         firstSeller = await userDao.firstSeller();
@@ -29,8 +31,6 @@ describe('ProductsController', () => {
         } else {
             throw new Error('No sellers found in the database.');
         }
-
-        const tokenService = new TokenService();
         const expires = moment().add(1, 'hours'); // Token expiry time
         authToken = tokenService.generateToken(uuid, expires, 'access'); // Assuming 'access' is the token type
     });
@@ -88,40 +88,47 @@ describe('ProductsController', () => {
     describe('POST /products/:id/buy', () => {
         let insufficientFundsBuyer;
         let productId;
-    
+        let buyerWithFunds;
+
         before(async () => {
             // Assuming a method to get a buyer with insufficient funds
             insufficientFundsBuyer = await userDao.firstBuyerWithInsufficientFunds();
+            buyerWithFunds = await userDao.buyerWithFunds();
+            
             productId = firstProduct.id;
         });
-    
+
         it('should successfully purchase a product', async () => {
+
             const res = await request(app)
                 .post(`/api/products/${productId}/buy`)
-                .send({ userId: firstBuyer.id });
-    
+                .set('Authorization', `Bearer ${authToken}`)
+                .send({ userId: buyerWithFunds.id });
+
             expect(res.status).to.equal(200);
             expect(res.body.message).to.eq('Product purchased successfully.');
         });
-    
+
         it('should fail to purchase a product due to insufficient funds', async () => {
             const res = await request(app)
                 .post(`/api/products/${productId}/buy`)
+                .set('Authorization', `Bearer ${authToken}`)
                 .send({ userId: insufficientFundsBuyer.id });
-    
+
             expect(res.status).to.equal(400);
             expect(res.body.message).to.eq('Insufficient funds to purchase the product.');
         });
-    
+
         it('should fail to purchase a product with a non-buyer user', async () => {
             const res = await request(app)
                 .post(`/api/products/${productId}/buy`)
+                .set('Authorization', `Bearer ${authToken}`)
                 .send({ userId: firstSeller.id });
-    
+
             expect(res.status).to.equal(403);
             expect(res.body.message).to.eq('Only buyers can purchase products.');
         });
     });
-    
+
 
 });
