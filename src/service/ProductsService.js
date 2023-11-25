@@ -132,12 +132,6 @@ class ProductsService {
     buyProduct = async (productId, userId) => {
         try {
 
-            console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL');
-            console.log('productId', productId);
-            console.log('userId', userId);
-            console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL');
-
-
             const product = await this.productsDao.findById(productId);
             if (!product) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Product not found.');
@@ -154,12 +148,6 @@ class ProductsService {
 
             const deposit = await this.depositDao.findByUserId(userId);
 
-            console.log('*'.repeat(100));
-            console.log('deposit');
-            // console.log(deposit);
-            // console.log('product');
-            // console.log(product);
-            console.log('*'.repeat(100));
             if (!deposit || deposit.amount < product.cost) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Insufficient funds to purchase the product.');
             }
