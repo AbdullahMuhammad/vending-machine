@@ -11,7 +11,9 @@ class DepositDao extends SuperDao {
     // Create or update a deposit record
     async createOrUpdate({ userId, amount }) {
 
-        const deposit = await Deposit.findOne({ where: { userId } });
+        const deposit = await Deposit.findOne({
+            where: { userId: userId }
+        });
 
         if (deposit) {
             // If a deposit record exists, add the coin value to the current amount
@@ -23,7 +25,34 @@ class DepositDao extends SuperDao {
         }
     }
 
-    // ... You can add more methods as needed ...
+    /**
+     * Find a deposit by user ID.
+     * @param {number} userId - The ID of the user whose deposit is to be found.
+     * @returns {Promise<Model|null>} A promise that resolves with the deposit found, or null if not found.
+     */
+    async findByUserId(userId) {
+        return await Deposit.findOne({
+            where: { userId: userId }
+        });
+    }
+
+
+    /**
+     * Update the deposit amount for a given user.
+     * @param {number} userId - The ID of the user whose deposit is to be updated.
+     * @param {number} newAmount - The new amount to set for the deposit.
+     * @returns {Promise<Model>} A promise that resolves with the updated deposit.
+     */
+    async updateAmount(userId, newAmount) {
+        const deposit = await Deposit.findOne({ where: { userId } });
+        if (!deposit) {
+            throw new Error('Deposit not found for the given user ID');
+        }
+
+        deposit.amount = newAmount;
+        return await deposit.save();
+    }    
+
 }
 
 module.exports = DepositDao;
