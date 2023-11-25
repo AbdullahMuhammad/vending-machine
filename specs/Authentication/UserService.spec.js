@@ -73,5 +73,33 @@ describe('UserService', () => {
         });
     });
 
-    // Additional test cases for changePassword and other methods will go here
+    describe('resetDeposit', () => {
+        it('should reset the deposit of a buyer to 0', async () => {
+            const userId = 1; // Example user ID
+            const role = 'buyer';
+    
+            // Set up stubs to simulate a buyer user and successful deposit reset
+            userDaoStub.findById.resolves({ id: userId, role });
+            userDaoStub.resetDeposit.resolves({ id: userId, deposit: 0 });
+    
+            const result = await userService.resetDeposit(userId);
+    
+            expect(result.response.status).to.be.true;
+            expect(result.statusCode).to.equal(httpStatus.OK);
+            expect(result.response.data.deposit).to.equal(0);
+        });
+    
+        it('should not reset the deposit for a seller', async () => {
+            const userId = 2; // Example user ID
+            const role = 'seller';
+    
+            userDaoStub.findById.resolves({ id: userId, role });
+    
+            const result = await userService.resetDeposit(userId);
+    
+            expect(result.response.status).to.be.false;
+            expect(result.statusCode).to.equal(httpStatus.FORBIDDEN);
+        });
+    });
+
 });
