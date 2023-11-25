@@ -1,129 +1,20 @@
-# Boilerplate for Node-Express with sequelize ORM
+A simple application simulating Vending machine.
+Nothing fancy, just wanted to showcase my style of engineering/development.
+Some of the tasks covered are as follows. 
+**Tasks**
+- REST API is implemented consuming and producing “application/json”
+- Product model is implemented with amountAvailable, cost (should be in multiples of 5), productName and sellerId fields
+- User model is implemented with username, password, deposit and role fields
+- Authentication with JWT and passport 
+- CRUD for users (POST /user should not require authentication to allow new user registration)
+- CRUD for a product model (GET can be called by anyone, while POST, PUT and DELETE can be called only by the seller user who created the product)
+- /deposit endpoint so users with a “buyer” role can deposit only 5, 10, 20, 50 and 100 cent coins into their vending machine account (one coin at the time)
+- /buy endpoint (accepts productId, amount of products) so users with a “buyer” role can buy a product (shouldn't be able to buy multiple different products at the same time) with the money they’ve deposited. API should return total they’ve spent, the product they’ve purchased and their change if there’s any (in an array of 5, 10, 20, 50 and 100 cent coins)
+- /reset endpoint so users with a “buyer” role can reset their deposit back to 0
 
-A boilerplate for any enterprise rest api or service with Node.js, Express and Sequelize ORM for mysql, postgresql or others.
-
-By running this project you will get a production ready environment with all necessary supports for validation, unit testing, socket, redis and many more.
-
-## Manual Installation
-
-Clone the repo:
-
-```bash
-git clone https://github.com/aoyan107/node-express-mysql-boilerplate
-cd node-express-mysql-boilerplate
-```
-
-Install the dependencies:
-
-```bash
-yarn install
-```
-
-Set the environment variables:
-
-```bash
-cp .env.example .env
-
-# open .env and modify the environment variables (if needed)
-```
-
-
-## Features
-
-- **ORM**: [Sequelize](https://sequelize.org/)  orm for object data modeling
-- **Migration and Seed**: DB migration and Seed using [Sequelize-CLI](https://github.com/sequelize/cli) 
-- **Authentication and authorization**: using [passport](http://www.passportjs.org)
-- **Error handling**: centralized error handling
-- **Validation**: request data validation using [Joi](https://github.com/hapijs/joi)
-- **Logging**: using [winston](https://github.com/winstonjs/winston) 
-- **Testing**: unittests using [Mocha](https://mochajs.org/)
-- **Caching**: Caching using [Redis](https://redis.io/)
-- **Bidirectional Communication**: using [Scoket](https://socket.io/)
-- **Job scheduler**: with [Node-cron](https://www.npmjs.com/package/node-cron)
-- **Dependency management**: with [Yarn](https://yarnpkg.com)
-- **Environment variables**: using [dotenv](https://github.com/motdotla/dotenv) and [cross-env](https://github.com/kentcdodds/cross-env#readme)
-- **CORS**: Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
-- **Docker support**
-- **Linting**: with [ESLint](https://eslint.org) and [Prettier](https://prettier.io)
-
-## Commands
-
-Running locally:
-
-```bash
-yarn dev
-```
-
-Running in production:
-
-```bash
-yarn start
-```
-
-Testing:
-
-```bash
-# run all tests
-yarn test
-
-```
-
-## Environment Variables
-
-The environment variables can be found and modified in the `.env` file. They come with these default values:
-
-```bash
-#Server environment
-NODE_ENV=development
-#Port number
-PORT=5000
-
-#Db configuration
-DB_HOST=db-host
-DB_USER=db-user
-DB_PASS=db-pass
-DB_NAME=db-name
-
-
-# JWT secret key
-JWT_SECRET=your-jwt-secret-key
-# Number of minutes after which an access token expires
-JWT_ACCESS_EXPIRATION_MINUTES=5
-# Number of days after which a refresh token expires
-JWT_REFRESH_EXPIRATION_DAYS=30
-
-#Log config
-LOG_FOLDER=logs/
-LOG_FILE=%DATE%-app-log.log
-LOG_LEVEL=error
-
-#Redis
-REDIS_HOST=redis-host
-REDIS_PORT=6379
-REDIS_USE_PASSWORD=no
-REDIS_PASSWORD=your-password
-
-```
-
-## Project Structure
-
-```
-specs\
-src\
- |--config\         # Environment variables and configuration related things
- |--controllers\    # Route controllers (controller layer)
- |--dao\            # Data Access Object for models
- |--db\             # Migrations and Seed files
- |--models\         # Sequelize models (data layer)
- |--routes\         # Routes
- |--services\       # Business logic (service layer)
- |--helper\         # Helper classes and functions
- |--validations\    # Request data validation schemas
- |--app.js          # Express app
- |--cronJobs.js     # Job Scheduler
- |--index.js        # App entry point
-```
-
-## License
-
-[MIT](LICENSE)
+TDD was used to implement the above features.
+Big fan of TDD.
+A boilerplate was used for node, express and mysql.
+App can be improved in 100 ways but a balance has to be maintained between beautiful code and time to market.
+I think I did a good job here to maintain that balance.
+I spent 2-3 days to implement above. You can see the repo.
