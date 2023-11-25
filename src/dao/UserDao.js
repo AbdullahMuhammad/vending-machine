@@ -41,22 +41,37 @@ class UserDao extends SuperDao {
     }
 
     async firstBuyerWithInsufficientFunds() {
-        return User.findOne({
-            where: { role: 'buyer' },
+        return await User.findOne({
+            where: {
+                role: rolesEnum.BUYER,
+                [Op.or]: [
+                    { '$deposits.amount$': 0 },              // Deposit amount is 0
+                    { '$deposits.amount$': { [Op.is]: null } }  // No deposit record
+                ]
+            },
             include: [{
                 model: Deposit,
-                as: 'deposit', // Assuming the alias is 'deposit'
-                required: false, // This includes users without a deposit record
-                where: {
-                    amount: {
-                        [Op.or]: [
-                            { [Op.eq]: 0 }, // Deposit amount is 0
-                            { [Op.is]: null } // Deposit record does not exist
-                        ]
-                    }
-                }
+                as: 'deposits',
+                required: false  // Left join with Deposit table
             }],
-            order: [['createdAt', 'ASC']] // Ordering by creation time
+        });
+    }
+
+    /**
+     * Find a buyer who has funds.
+     * @returns {Promise<Model|null>}
+     */
+    async buyerWithFunds() {
+        return await User.findOne({
+            where: { 
+                role: rolesEnum.BUYER,
+                '$deposits.amount$': { [Op.gt]: 0 }  // Deposit amount greater than 0
+            },
+            include: [{
+                model: Deposit,
+                as: 'deposits',
+                required: true  // Left join with Deposit table
+            }],
         });
     }
 }
